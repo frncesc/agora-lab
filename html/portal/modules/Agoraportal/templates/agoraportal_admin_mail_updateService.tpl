@@ -44,23 +44,6 @@
         on trobareu un conjunt important d'informació sobre l'ús 
         d'aquesta plataforma d'aprenentatge.
     </p>
-    {elseif $servicetype->serviceName eq 'intranet'}
-    <p>
-        Tal com s'especifica a les condicions d'ús del servei, 
-        recordeu que a la XTEC no hi ha cap figura destinada a solucionar les
-        qüestions plantejades en relació al funcionament de la 
-        intranet. Per tal de resoldre els dubtes relacionats amb aquest tema
-        podeu adreçar-vos als  <a href="{$servicetype->support_url}">fòrums 
-        del projecte Intraweb</a>. En aquest fòrum tothom pot preguntar 
-        i respondre les qüestions que consideri oportunes.
-    </p>
-    <p>
-        Teniu a la vostra disposició els materials del 
-        <a href="http://ateneu.xtec.cat/wikiform/wikiexport/cursos/gestio_centres/d134/index">curs
-        de formació sobre l'administració de la intranet</a> a on hi 
-        trobareu un conjunt important d'informació sobre l'ús 
-        d'aquesta plataforma.
-    </p>
     {elseif $servicetype->serviceName eq 'nodes'}
     <p>
         Tal com s'especifica a les condicions d'ús del servei, 

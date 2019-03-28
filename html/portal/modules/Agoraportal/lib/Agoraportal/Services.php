@@ -995,10 +995,9 @@ class Service extends AgoraBase {
         if ($serviceName == 'moodle2') {
             $databaseIds = Services::get_activeId_by_serviceid($this->serviceId);
         } else {
-            // Get all client services (all states) of service 'nodes' and 'intranet'
+
             $nodes = ServiceType::get_by_name('nodes');
-            $intranet = ServiceType::get_by_name('intranet');
-            $databaseIds = Services::get_activeId_by_serviceid(array($nodes->serviceId, $intranet->serviceId));
+            $databaseIds = Services::get_activeId_by_serviceid(array($nodes->serviceId));
         }
 
         $i = 1;

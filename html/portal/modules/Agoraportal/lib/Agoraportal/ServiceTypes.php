@@ -149,8 +149,6 @@ class ServiceType extends AgoraBase {
                 return 'https://agora.xtec.cat/moodle/moodle/mod/forum/view.php?id=181';
             case 'nodes':
                 return 'https://agora.xtec.cat/moodle/moodle/mod/forum/view.php?id=1721';
-            case 'intranet':
-                return 'https://agora.xtec.cat/moodle/moodle/mod/forum/view.php?id=1161';
         }
         return false;
     }

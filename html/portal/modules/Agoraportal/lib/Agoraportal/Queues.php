@@ -10,44 +10,6 @@ class Agora_Queues {
     const TIMEOUT = 1800; ///Half an hour
 
     /**
-     * @return the date of last execution of the queues
-     */
-    public static function get_last_execution() {
-        $sv = ModUtil::func('IWmain', 'user', 'genSecurityValue');
-        //-100 really is not a user but represents the system user
-        return  ModUtil::func('IWmain', 'user', 'userGetVar',
-            array('uid' => -100,
-                'name' => 'lastCronSuccessfull',
-                'module' => 'Queues_cron',
-                'sv' => $sv));
-    }
-
-    /**
-     * Sets the date of the last execution of the queues
-     * @param $content response of the cron
-     */
-    public static function set_last_execution_now($content) {
-        $sv = ModUtil::func('IWmain', 'user', 'genSecurityValue');
-        // -100 is not a user but represents the system user
-        ModUtil::func('IWmain', 'user', 'userSetVar',
-            array('uid' => -100,
-                'name' => 'lastCronSuccessfull',
-                'module' => 'Queues_cron',
-                'lifetime' => 1000 * 24 * 60 * 60,
-                'sv' => $sv,
-                'value' => time()));
-
-        $sv = ModUtil::func('IWmain', 'user', 'genSecurityValue');
-        ModUtil::func('IWmain', 'user', 'userSetVar',
-            array('uid' => -100,
-                'name' => 'cronResponse',
-                'module' => 'Queues_cron',
-                'lifetime' => 1000 * 24 * 60 * 60,
-                'sv' => $sv,
-                'value' => $content));
-    }
-
-    /**
      * Execute the pending operations in the queues
      * @return bool
      */

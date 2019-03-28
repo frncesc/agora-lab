@@ -104,12 +104,10 @@ class Agoraportal_Controller_Admin extends Zikula_AbstractController {
         $clientService->annotations = $annotations;
         $clientService->diskSpace = $diskSpace;
 
-        // If dbHost is not set, autofill it with a default value. This is a guess. dbHost should come from web form.
-        if ((is_null($dbHost) || empty($dbHost)) && (($serviceName == 'intranet') || ($serviceName == 'nodes'))) {
-            $clientService->dbHost = $agora['intranet']['host'];
-        } else {
-            $clientService->dbHost = $dbHost;
-        }
+
+
+        $clientService->dbHost = $dbHost;
+
 
         // Create a var for admin password where to keep it in order to send it by e-mail
         $password = '';
@@ -1624,7 +1622,7 @@ class Agoraportal_Controller_Admin extends Zikula_AbstractController {
         $warningMsgTpl .= "<p>---<br />L'equip del projecte Àgora</p>";
         $warningMsgTpl .= "<p>P.D.: Aquest missatge s'envia automàticament. Si us plau, no el respongueu.</p>";
 
-        // Get available services with db flag set (currently: intranet, moodle2, nodes)
+        // Get available services with db flag set (currently: moodle2, nodes)
         $servicetypes = ServiceTypes::get_with_db();
 
         // Build array with info of the services to check and the path to its file
@@ -1740,18 +1738,6 @@ class Agoraportal_Controller_Admin extends Zikula_AbstractController {
                     'body' => $content,
                     'html' => 1 ) );
             }
-        } else {
-            $sv = ModUtil::func('IWmain', 'user', 'genSecurityValue');
-            ModUtil::func('IWmain', 'user', 'userSetVar', array('uid' => -100,
-                'name' => 'lastCron_updatedisk',
-                'module' => 'updateDiskUse_cron',
-                'lifetime' => 1000 * 24 * 60 * 60,
-                'sv' => $sv,
-                'value' => time()));
-            if (!defined('CLI_SCRIPT')) {
-                echo '<br /><br />';
-            }
-            echo "ok\n";
         }
         return true;
     }
@@ -2218,11 +2204,6 @@ class Agoraportal_Controller_Admin extends Zikula_AbstractController {
         if ($serviceName == 'nodes' && empty($template)) {
             LogUtil::registerError('S\'ha de seleccionar una plantilla en el cas de nodes');
             return $this->createBatch($args);
-        }
-
-        // Autofill dbHost var with default value. This is a guess. dbHost should come from web form.
-        if ((is_null($dbHost) || empty($dbHost)) && (($serviceName == 'intranet') || ($serviceName == 'nodes'))) {
-            $dbHost = $agora['intranet']['host'];
         }
 
         $clientCodes = explode(',', $schoolCodes);

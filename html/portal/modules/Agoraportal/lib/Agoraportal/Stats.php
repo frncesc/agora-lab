@@ -14,9 +14,6 @@ class Stats {
     function getServiceStats($serviceid) {
         $servicetype = ServiceType::get_by_id($serviceid);
         switch($servicetype->serviceName) {
-            case 'intranet':
-                return array('month' => 'Mensuals');
-                break;
             case 'moodle':
             case 'moodle2':
                 return array('day' => 'Diàries', 'week' => 'Setmanals', 'month' => 'Mensuals');
