@@ -3,16 +3,16 @@ require_once('env-config.php');
 require_once('dblib-mysql.php');
 ?>
 
-<!DOCTYPE html>
-<html lang="ca">
-<head>
-<meta charset="utf-8">
-<title>Check crons</title>
-<!-- Latest compiled and minified CSS -->
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
-</head>
-<body>
-<div class="container">
+    <!DOCTYPE html>
+    <html lang="ca">
+    <head>
+        <meta charset="utf-8">
+        <title>Check crons</title>
+        <!-- Latest compiled and minified CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+    </head>
+    <body>
+    <div class="container">
 
 <?php
 
@@ -22,16 +22,14 @@ if (empty($hostname)) {
 }
 $services = getServices(true);
 foreach ($services as $school) {
-    if (!isset($intranet) && $school['service'] == 'intranet') {
-        $intranet = $school;
-    }
+
     if (!isset($moodle2) && $school['service'] == 'moodle2') {
         $moodle2 = $school;
     }
     if (!isset($nodes) && $school['service'] == 'nodes') {
         $nodes = $school;
     }
-    if (isset($nodes) && isset($intranet) && isset($moodle2)) {
+    if (isset($nodes) && isset($moodle2)) {
         break;
     }
 }
@@ -72,34 +70,14 @@ checkOldFile($agora['dbsource']['dir'] . 'allSchools.php', 86400);
 
 echo '<h2>Crons cabina de disc</h2>';
 echo '<h3>Cron Disk Usage</h3>';
-checkOldFile($agora['server']['root'] . $agora['intranet']['datadir'] . $agora['intranet']['diskusagefile'], 86400);
 checkOldFile($agora['server']['root'] . $agora['moodle2']['datadir'] . $agora['moodle2']['diskusagefile'], 86400);
 checkOldFile($agora['server']['root'] . $agora['nodes']['datadir'] . $agora['nodes']['diskusagefile'], 86400);
 
 echo '<h2>Crons del frontal principal</h2>';
 echo '<h3>Cron Àgora Diari</h3>';
 echo '<h4>createSchoolsListFiles</h4>';
-$cronintranets = checkOldFile($agora['server']['root'] . 'adminInfo/cronIntranet.txt', 86400);
 $cronmoodle = checkOldFile($agora['server']['root'] . 'adminInfo/cronMoodle2.txt', 86400);
 
-echo '<h4>Crons Intranets</h4>';
-if ($cronintranets) {
-    if (!isset($intranet)) {
-        echo_error('No  hi ha cap intranet activa');
-    } else if (!($con = connect_intranet($intranet))) {
-        echo_error('No s\'ha pogut connectar a la base de dades de la intranet del centre ' . $intranet['dns']);
-    } else {
-        $sql = 'SELECT `iw_value` FROM  IWmain WHERE `iw_name` = \'lastCronSuccessfull\' AND `iw_module` = \'IWmain_cron\'';
-        $lastcron = $con->get_field($sql, 'iw_value');
-        $con->close();
-        echo '<a href="'.$urlbase.$intranet['dns'].'/intranet/iwcron.php" target="_blank">'.
-            $urlbase.$intranet['dns'].'/intranet/iwcron.php</a><br>';
-        echo '<strong>Darrer cron:</strong> ' . date(DATE_RFC822, $lastcron) . '<br>';
-        if ($time - $lastcron > 86400) {
-            echo_error('El cron no ha estat executat en les darreres 24h');
-        }
-    }
-}
 
 echo '<h4>Tar Cronlogs</h4>';
 $filename = $agora['server']['root'] . 'logs/' . 'crons.'.date("Ymd", strtotime('yesterday')).'.tgz';
@@ -107,21 +85,6 @@ if (file_exists($filename)) {
     echo 'OK';
 } else {
     echo_error('El fixer '.$filename.' no existeix');
-}
-
-echo '<h3>Cron Cues</h3>';
-if (!($portalcon = get_dbconnection('admin'))) {
-    echo_error('No s\'ha pogut connectar a la base de dades del portal');
-} else {
-    $sql = 'SELECT `iw_value` FROM  IWmain WHERE `iw_name` = \'lastCronSuccessfull\' AND `iw_module` = \'Queues_cron\'';
-    $lastcron = $portalcon->get_field($sql, 'iw_value');
-    $portalcon->close();
-    echo '<a href="'.$urlbase.'portal/queues_cron.php" target="_blank">'.
-        $urlbase.'portal/queues_cron.php</a><br>';
-    echo '<strong>Darrer cron:</strong> ' . date(DATE_RFC822, $lastcron) . '<br>';
-    if ($time - $lastcron > 300) {
-        echo_error('El cron no ha estat executat en els darrers 5 minuts');
-    }
 }
 
 echo '<h3>Cron Moodle2</h3>';
@@ -153,34 +116,10 @@ if ($cronmoodle) {
     }
 }
 
-echo '<h3>Cron Portal</h3>';
-if (!($portalcon = get_dbconnection('admin'))) {
-    echo_error('No s\'ha pogut connectar a la base de dades del portal');
-} else {
-    $sql = 'SELECT `iw_value` FROM  IWmain WHERE `iw_name` = \'lastCron_updatedisk\' AND `iw_module` = \'agoraPortal\'';
-    $lastcron = $portalcon->get_field($sql, 'iw_value');
-    $portalcon->close();
-    echo '<a href="'.$urlbase.'portal/index.php?module=agoraPortal&type=admin&func=updateDiskUse" target="_blank">'.
-        $urlbase.'portal/index.php?module=agoraPortal&type=admin&func=updateDiskUse</a><br>';
-    echo '<strong>Darrer cron:</strong> ' . date(DATE_RFC822, $lastcron) . '<br>';
-    if ($time - $lastcron > 86400) {
-        echo_error('El cron no ha estat executat en les darreres 24h');
-    }
-}
-
 echo '<h3>Cron Stats</h3>';
 if (!($portalcon = get_dbconnection('admin'))) {
     echo_error('No s\'ha pogut connectar a la base de dades del portal');
 } else {
-    $date = date("Ym", strtotime('yesterday'));
-    $day = date("j", strtotime('yesterday'));
-    $sql = 'SELECT * FROM agoraportal_intranet_stats_day WHERE yearmonth = '.$date.' AND d'.$day.' != 0';
-    $count = $portalcon->count_rows($sql);
-    if ($count <= 0) {
-        echo_error('No hi ha estadístiques de la Intranet');
-    } else {
-        echo 'OK estadístiques Intranet<br>';
-    }
 
     $dateday = date("Ymd", strtotime('yesterday'));
     $sql = 'SELECT * FROM agoraportal_moodle2_stats_day WHERE `date` = '.$dateday;

@@ -1724,118 +1724,6 @@ INSERT INTO `hook_subscriber` (`id`, `owner`, `subowner`, `sareaid`, `hooktype`,
 -- --------------------------------------------------------
 
 --
--- Estructura de la taula `IWmain`
---
-
-CREATE TABLE IF NOT EXISTS `IWmain` (
-  `iw_id` int(11) NOT NULL AUTO_INCREMENT,
-  `iw_module` varchar(50) NOT NULL,
-  `iw_name` varchar(50) NOT NULL,
-  `iw_value` longtext NOT NULL,
-  `iw_uid` int(11) NOT NULL DEFAULT '0',
-  `iw_lifetime` varchar(20) NOT NULL DEFAULT '0',
-  `iw_nult` tinyint(4) NOT NULL DEFAULT '0',
-  `pn_obj_status` varchar(1) NOT NULL DEFAULT 'A',
-  `pn_cr_date` datetime NOT NULL DEFAULT '1970-01-01 00:00:00',
-  `pn_cr_uid` int(11) NOT NULL DEFAULT '0',
-  `pn_lu_date` datetime NOT NULL DEFAULT '1970-01-01 00:00:00',
-  `pn_lu_uid` int(11) NOT NULL DEFAULT '0',
-  PRIMARY KEY (`iw_id`),
-  KEY `iw_module` (`iw_module`),
-  KEY `iw_name` (`iw_name`),
-  KEY `iw_uid` (`iw_uid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
-
--- --------------------------------------------------------
-
---
--- Estructura de la taula `IWmain_logs`
---
-
-CREATE TABLE IF NOT EXISTS `IWmain_logs` (
-  `iw_logId` int(11) NOT NULL AUTO_INCREMENT,
-  `iw_moduleName` varchar(25) NOT NULL,
-  `iw_actionType` tinyint(4) NOT NULL DEFAULT '0',
-  `iw_visible` tinyint(4) NOT NULL DEFAULT '0',
-  `iw_actionText` varchar(255) NOT NULL,
-  `iw_logIp` varchar(15) NOT NULL,
-  `iw_indexName` varchar(15) NOT NULL,
-  `iw_indexValue` int(11) NOT NULL DEFAULT '0',
-  `iw_indexName1` varchar(15) NOT NULL,
-  `iw_indexValue1` int(11) NOT NULL DEFAULT '0',
-  `iw_error` tinyint(4) NOT NULL DEFAULT '0',
-  `obj_status` varchar(1) NOT NULL DEFAULT 'A',
-  `cr_date` datetime NOT NULL DEFAULT '1970-01-01 00:00:00',
-  `cr_uid` int(11) NOT NULL DEFAULT '0',
-  `lu_date` datetime NOT NULL DEFAULT '1970-01-01 00:00:00',
-  `lu_uid` int(11) NOT NULL DEFAULT '0',
-  PRIMARY KEY (`iw_logId`),
-  KEY `iw_moduleName` (`iw_moduleName`),
-  KEY `iw_visible` (`iw_visible`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
-
--- --------------------------------------------------------
-
---
--- Estructura de la taula `IWstats`
---
-
-CREATE TABLE IF NOT EXISTS `IWstats` (
-  `iw_statsid` int(11) NOT NULL AUTO_INCREMENT,
-  `iw_datetime` datetime NOT NULL DEFAULT '1970-01-01 00:00:00',
-  `iw_ip` varchar(15) NOT NULL,
-  `iw_ipForward` varchar(15) NOT NULL DEFAULT '',
-  `iw_ipClient` varchar(15) NOT NULL DEFAULT '',
-  `iw_userAgent` varchar(255) NOT NULL DEFAULT '',
-  `iw_moduleid` int(11) NOT NULL DEFAULT '0',
-  `iw_params` varchar(100) NOT NULL,
-  `iw_uid` int(11) NOT NULL DEFAULT '0',
-  `iw_isadmin` tinyint(4) NOT NULL DEFAULT '0',
-  `iw_skipped` tinyint(4) NOT NULL DEFAULT '0',
-  `iw_skippedModule` tinyint(4) NOT NULL DEFAULT '0',
-  `iw_summarised` tinyint(4) NOT NULL DEFAULT '0',
-  PRIMARY KEY (`iw_statsid`),
-  KEY `iw_moduleid` (`iw_moduleid`),
-  KEY `iw_uid` (`iw_uid`),
-  KEY `iw_ip` (`iw_ip`),
-  KEY `iw_isadmin` (`iw_isadmin`),
-  KEY `iw_ipForward` (`iw_ipForward`),
-  KEY `iw_ipClient` (`iw_ipClient`),
-  KEY `iw_userAgent` (`iw_userAgent`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=4 ;
-
---
--- Bolcant dades de la taula `IWstats`
---
-
-INSERT INTO `IWstats` (`iw_statsid`, `iw_datetime`, `iw_ip`, `iw_ipForward`, `iw_ipClient`, `iw_userAgent`, `iw_moduleid`, `iw_params`, `iw_uid`, `iw_isadmin`, `iw_skipped`, `iw_skippedModule`, `iw_summarised`) VALUES
-(1, '2017-03-21 17:44:21', '192.168.33.1', '', '', 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:52.0) Gecko/20100101 Firefox/52.0', 64, 'module=Agoraportal&type=admin&func=main', 0, 0, 0, 0, 0),
-(2, '2017-03-21 17:44:22', '192.168.33.1', '', '', 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:52.0) Gecko/20100101 Firefox/52.0', 14, 'module=usuaris&type=user&func=login&returnpage=%2Fagora%2Fportal%2Findex.php%3Fmodule%3DAgoraportal%', 0, 0, 0, 0, 0),
-(3, '2017-03-21 17:44:25', '192.168.33.1', '', '', 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:52.0) Gecko/20100101 Firefox/52.0', 14, 'module=usuaris&type=user&func=login&returnpage=http://agora-virtual.xtec.cat/agora/portal/index.php?', 0, 0, 0, 0, 0);
-
--- --------------------------------------------------------
-
---
--- Estructura de la taula `IWstats_summary`
---
-
-CREATE TABLE IF NOT EXISTS `IWstats_summary` (
-  `iw_summaryid` int(11) NOT NULL AUTO_INCREMENT,
-  `iw_datetime` datetime NOT NULL DEFAULT '1970-01-01 00:00:00',
-  `iw_nrecords` int(11) NOT NULL DEFAULT '0',
-  `iw_registered` int(11) NOT NULL DEFAULT '0',
-  `iw_modules` longtext NOT NULL,
-  `iw_skipped` int(11) NOT NULL DEFAULT '0',
-  `iw_skippedModule` int(11) NOT NULL DEFAULT '0',
-  `iw_isadmin` int(11) NOT NULL DEFAULT '0',
-  `iw_users` longtext NOT NULL,
-  `iw_nips` int(11) NOT NULL DEFAULT '0',
-  PRIMARY KEY (`iw_summaryid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
-
--- --------------------------------------------------------
-
---
 -- Estructura de la taula `modules`
 --
 
@@ -1891,8 +1779,6 @@ INSERT INTO `modules` (`id`, `name`, `type`, `displayname`, `url`, `description`
 (35, 'AuthLDAP', 2, 'AuthLDAP', 'AuthLDAP', 'Permet validar els centres per LDAP.', 0, 'AuthLDAP', '1.0.1', 1, 'Mike Goldfinger', 'MikeGoldfinger@linuxmail.org', 1, 0, 0, 0, 3, 'pndocs/credits.txt', 'pndocs/changelog.txt', 'pndocs/help.txt', 'pndocs/license.txt', 'a:1:{s:10:"AuthLDAP::";s:2:"::";}', 'a:1:{s:5:"admin";a:1:{s:7:"version";s:3:"1.0";}}', '', ''),
 (64, 'Agoraportal', 2, 'Agoraportal', 'Agoraportal', 'Administració dels serveis d''Àgora, petició d''espais nous i gestió per part dels centres.', 0, 'Agoraportal', '3.0.1', 0, 'Agora Development Team', 'agora@xtec.cat', 1, 1, 0, 0, 3, 'pndocs/credits.txt', 'pndocs/changelog.txt', 'pndocs/help.txt', 'pndocs/license.txt', 'a:1:{s:13:"Agoraportal::";s:2:"::";}', 'a:2:{s:5:"admin";a:1:{s:7:"version";s:3:"1.0";}s:4:"user";a:1:{s:7:"version";s:3:"1.0";}}', '', ''),
 (68, 'XtecMailer', 2, 'Mailer XTEC', 'XtecMailer', 'Amplia les funcionalitats del mòdul Mailer per poder enviar correu electrònic utilitzant el servei web de la XTEC', 0, 'XtecMailer', '1.0.0', 0, '', '', 0, 0, 0, 0, 3, '', '', '', '', 'a:1:{s:12:"XtecMailer::";s:2:"::";}', 'a:1:{s:5:"admin";a:1:{s:7:"version";s:3:"1.0";}}', '', ''),
-(69, 'IWmain', 2, 'Intraweb', 'IWmain', 'Mòdul principal del mòduls Intraweb. Els mòduls Intraweb necessiten aquest mòdul per poder funcionar.', 0, 'IWmain', '3.0.0', 0, '', '', 0, 0, 0, 0, 3, '', '', '', '', 'a:1:{s:8:"IWmain::";s:2:"::";}', 'a:2:{s:5:"admin";a:1:{s:7:"version";s:3:"1.0";}s:4:"user";a:1:{s:7:"version";s:3:"1.0";}}', '', ''),
-(70, 'IWstats', 2, 'Estadístiques', 'IWstats', 'Mòdul d''estadístiques.', 0, 'IWstats', '3.0.1', 0, '', '', 0, 0, 0, 0, 3, '', '', '', '', 'a:1:{s:9:"IWstats::";s:2:"::";}', 'a:1:{s:5:"admin";a:1:{s:7:"version";s:3:"1.0";}}', '', ''),
 (71, 'Files', 2, 'Gestor de fitxers', 'fitxers', 'Gestió de fitxers per a llocs Zikula', 0, 'Files', '1.0.3', 0, '', '', 0, 0, 0, 0, 3, '', '', '', '', 'a:1:{s:7:"Files::";s:2:"::";}', 'a:2:{s:5:"admin";a:1:{s:7:"version";s:3:"1.0";}s:4:"user";a:1:{s:7:"version";s:3:"1.0";}}', '1.3.0', '1.3.99'),
 (72, 'Legal', 2, 'Legal info manager', 'legalmod', 'Provides an interface for managing the site''s legal documents.', 0, 'Legal', '2.0.1', 0, '', '', 0, 0, 0, 0, 1, '', '', '', '', 'a:8:{s:7:"Legal::";s:2:"::";s:18:"Legal::legalnotice";s:2:"::";s:17:"Legal::termsofuse";s:2:"::";s:20:"Legal::privacypolicy";s:2:"::";s:16:"Legal::agepolicy";s:2:"::";s:29:"Legal::accessibilitystatement";s:2:"::";s:30:"Legal::cancellationrightpolicy";s:2:"::";s:22:"Legal::tradeconditions";s:2:"::";}', 'a:2:{s:5:"admin";a:1:{s:7:"version";s:3:"1.0";}s:4:"user";a:1:{s:7:"version";s:3:"1.0";}}', '1.3.0', '1.3.99'),
 (73, 'Search', 3, 'Motor de cerca', 'cerca', 'Paràmetres del cercador intern del lloc.', 0, 'Search', '1.5.2', 0, '', '', 0, 0, 0, 0, 1, '', '', '', '', 'a:1:{s:8:"Search::";s:13:"Module name::";}', 'a:2:{s:5:"admin";a:1:{s:7:"version";s:3:"1.0";}s:4:"user";a:1:{s:7:"version";s:3:"1.0";}}', '', '');
@@ -2004,7 +1890,6 @@ INSERT INTO `module_vars` (`id`, `modname`, `name`, `value`) VALUES
 (69, 'ZConfig', 'metakeywords', 's:30:"agora, portal, gestor, serveis";'),
 (70, 'ZConfig', 'startdate', 's:7:"02/2010";'),
 (71, 'ZConfig', 'adminmail', 's:14:"agora@xtec.cat";'),
-(72, 'ZConfig', 'Default_Theme', 's:8:"IWportal";'),
 (73, 'ZConfig', 'anonymous', 's:5:"Guest";'),
 (74, 'ZConfig', 'timezone_offset', 's:1:"1";'),
 (75, 'ZConfig', 'timezone_server', 's:1:"2";'),
@@ -2197,23 +2082,6 @@ INSERT INTO `module_vars` (`id`, `modname`, `name`, `value`) VALUES
 (830, 'systemplugin.imagine', 'presets', 'a:1:{s:7:"default";C:27:"SystemPlugin_Imagine_Preset":178:{x:i:2;a:7:{s:5:"width";i:100;s:6:"height";i:100;s:4:"mode";N;s:9:"extension";N;s:8:"__module";N;s:9:"__imagine";N;s:16:"__transformation";N;};m:a:1:{s:7:"\0*\0name";s:7:"default";}}}'),
 (831, 'Theme', 'enable_mobile_theme', 'b:0;'),
 (832, 'Mailer', 'smtpsecuremethod', 's:0:"";'),
-(833, 'IWmain', 'url', 's:31:"http://phobos.xtec.net/intraweb";'),
-(834, 'IWmain', 'email', 's:17:"intraweb@xtec.cat";'),
-(835, 'IWmain', 'documentRoot', 's:4:"data";'),
-(836, 'IWmain', 'extensions', 's:35:"odt|ods|odp|zip|pdf|doc|jpg|gif|txt";'),
-(837, 'IWmain', 'maxsize', 's:7:"1000000";'),
-(838, 'IWmain', 'usersvarslife', 's:2:"60";'),
-(839, 'IWmain', 'cronHeaderText', 's:68:"Text de l''encapçalament dels missatges automàtics amb les novetats";'),
-(840, 'IWmain', 'cronFooterText', 's:25:"Text del peu del missatge";'),
-(841, 'IWmain', 'showHideFiles', 's:1:"0";'),
-(842, 'IWmain', 'captchaPrivateCode', 's:0:"";'),
-(843, 'IWmain', 'captchaPublicCode', 's:0:"";'),
-(844, 'IWmain', 'URLBase', 's:26:"http://agora/agora/portal/";'),
-(845, 'IWstats', 'skippedIps', 's:0:"";'),
-(846, 'IWstats', 'modulesSkipped', 's:0:"";'),
-(847, 'IWstats', 'deleteFromDays', 'i:90;'),
-(848, 'IWstats', 'keepDays', 'i:90;'),
-(849, '/EventHandlers', 'IWstats', 'a:1:{i:0;a:3:{s:9:"eventname";s:13:"core.postinit";s:8:"callable";a:2:{i:0;s:17:"IWstats_Listeners";i:1;s:8:"coreinit";}s:6:"weight";i:10;}}'),
 (850, 'Files', 'showHideFiles', 's:1:"0";'),
 (851, 'Files', 'allowedExtensions', 's:40:"gif,png,jpg,jpeg,odt,doc,pdf,zip,txt,sql";'),
 (852, 'Files', 'defaultQuota', 's:1:"1";'),
@@ -2465,7 +2333,6 @@ INSERT INTO `themes` (`id`, `name`, `type`, `displayname`, `description`, `regid
 (4, 'Atom', 3, 'Àtom', 'Entorn visual auxiliar que genera pàgines en el format de sindicació Atom.', 0, 'Atom', '1.0', 0, 'Franz Skaaning', '', 0, 0, 1, 1, '', '', '', '', 0),
 (6, 'Printer', 3, 'Impressora', 'L''entorn visual Printer és un entorn visual auxiliar dissenyat per mostrar les pàgines en un format adequat per a la impressió', 0, 'Printer', '2.0', 0, 'Mark West', '', 0, 0, 1, 1, '', '', '', '', 1),
 (8, 'Andreas08', 3, 'Andreas08', 'Based on the theme Andreas08 by Andreas Viklund and extended for Zikula with the CSS Framework ''fluid960gs''.', 0, 'Andreas08', '2.0', 0, 'David Brucas, Mark West, Andreas Viklund', '', 1, 1, 0, 1, '', '', '', '', 1),
-(9, 'IWportal', 3, 'Portal theme', 'Theme developed by the Intraweb project staff for the Agora service', 0, 'IWportal', '1.0', 0, 'Albert Bachiller, Pau Ferrer', 'aginard@xtec.cat', 1, 1, 1, 1, '', '', '', 'GNU/GPL', 1),
 (10, 'Mobile', 3, 'Mobile', 'The mobile theme is an auxiliary theme designed specially for outputting pages in a mobile-friendly format.', 0, 'Mobile', '1.0', 0, '', '', 0, 0, 1, 1, '', '', '', '', 1);
 
 -- --------------------------------------------------------

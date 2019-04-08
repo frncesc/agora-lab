@@ -5,7 +5,8 @@
  * @param type $dns
  * @return type boolean True if specified DNS is correct; false otherwise
  */
-function isValidDNS($dns) {
+function isValidDNS($dns)
+{
     if (strlen($dns) > 30 || !preg_match("/^[a-z0-9-_]+$/", $dns)) {
         return false;
     }
@@ -20,7 +21,8 @@ function isValidDNS($dns) {
  * @param string $cookie
  * @return boolean
  */
-function isValidCookie($cookie) {
+function isValidCookie($cookie)
+{
 
     global $agora;
 
@@ -42,7 +44,8 @@ function isValidCookie($cookie) {
  * Check if the client is of type "Servei Educatiu"
  * @return bool
  */
-function isServeiEducatiu() {
+function isServeiEducatiu()
+{
     global $school_info;
 
     if (!$school_info) {
@@ -56,7 +59,8 @@ function isServeiEducatiu() {
  * Check if the client is of type "projecte"
  * @return bool
  */
-function isProjecte() {
+function isProjecte()
+{
     global $school_info;
 
     if (!$school_info) {
@@ -71,7 +75,8 @@ function isProjecte() {
  * @param $domain to compare
  * @return bool
  */
-function is_in_domain($domain) {
+function is_in_domain($domain)
+{
     $length = strlen($_SERVER['HTTP_HOST']);
     $start = $length * -1; // negative
     return substr($domain, $start) === $_SERVER['HTTP_HOST'];
@@ -80,7 +85,7 @@ function is_in_domain($domain) {
 /**
  * Get an array with all the
  *
- * @param bool $codeletter: false means code will be 08000000
+ * @param bool $codeletter : false means code will be 08000000
  *                          true  means code will be a8000000
  * @param string $order
  * @param string $desc
@@ -89,7 +94,8 @@ function is_in_domain($domain) {
  *
  * @return array|bool
  */
-function getServices($codeletter = false, $order = 'clientDNS', $desc = 'asc', $service = 'all', $state = 'all') {
+function getServices($codeletter = false, $order = 'clientDNS', $desc = 'asc', $service = 'all', $state = 'all')
+{
 
     $values = $conditions = array();
 
@@ -151,11 +157,12 @@ function getServices($codeletter = false, $order = 'clientDNS', $desc = 'asc', $
  *
  * @author aginard
  *
- * @param string $service: the name of the service (nodes or moodle2)
+ * @param string $service : the name of the service (nodes or moodle2)
  *
  * @return array list of schools
  */
-function getServicesToTest($service) {
+function getServicesToTest($service)
+{
 
     $schools = array();
     if ($service == 'nodes') {
@@ -203,7 +210,8 @@ function getServicesToTest($service) {
  * @param $service Name of the service (nodes, moodle2)
  * @return string Nom propi of the school
  */
-function getSchoolInfo($service) {
+function getSchoolInfo($service)
+{
 
     global $agora, $school_info;
     $school_info = array();
@@ -247,7 +255,7 @@ function getSchoolInfo($service) {
             echo 'DNS ' . $centre . ' not valid!';
             echo "\nerror\n";
         } else {
-            $service_dir = ( $service == 'nodes') ? "s=" : "s=$service";
+            $service_dir = ($service == 'nodes') ? "s=" : "s=$service";
             header('Location: ' . WWWROOT . 'error.php?' . $service_dir . '&dns=' . $centre);
         }
         exit(0);
@@ -266,14 +274,10 @@ function getSchoolInfo($service) {
                 $school_info['id_moodle2'] = $data[5];
                 $school_info['database_moodle2'] = $data[6];
                 $school_info['diskPercent_moodle2'] = $data[7];
-                $school_info['id_intranet'] = $data[8];
-                $school_info['database_intranet'] = $data[9];
-                $school_info['dbhost_intranet'] = $data[10];
-                $school_info['diskPercent_intranet'] = $data[11];
-                $school_info['id_nodes'] = $data[12];
-                $school_info['database_nodes'] = $data[13];
-                $school_info['dbhost_nodes'] = $data[14];
-                $school_info['diskPercent_nodes'] = $data[15];
+                $school_info['id_nodes'] = $data[8];
+                $school_info['database_nodes'] = $data[9];
+                $school_info['dbhost_nodes'] = $data[10];
+                $school_info['diskPercent_nodes'] = $data[11];
                 // Debug info
                 $school_info['source'] = 'Cookie';
             }
@@ -301,11 +305,6 @@ function getSchoolInfo($service) {
     //  after the cache is checked to take into account the case of the recently activated services.
     if ($service == 'moodle2' && (!isset($school_info['id_moodle2']) || $school_info['id_moodle2'] == '')) {
         $school_info = array();
-    } elseif ($service == 'intranet' &&
-        (!isset($school_info['id_intranet']) || $school_info['id_intranet'] == '') &&
-        (!isset($school_info['id_nodes']) || $school_info['id_nodes'] == ''))
-    {
-        $school_info = array();
     } elseif ($service == 'nodes' && (!isset($school_info['id_nodes']) || $school_info['id_nodes'] == '')) {
         $school_info = array();
     }
@@ -317,17 +316,6 @@ function getSchoolInfo($service) {
         if (!empty($school_info)) {
             $school_info['source'] = 'DB';
         }
-    }
-
-    // Redirect old intranet URL to Nodes in case the client has a Nodes service
-    if ($service == 'intranet' &&
-        (isset($school_info['id_nodes']) && !empty($school_info['id_nodes'])) &&
-        (!isset($school_info['id_intranet']) || empty($school_info['id_intranet'])))
-    {
-        $newaddress = $agora['server']['html'] . $centre . '/';
-        header('HTTP/1.1 301 Moved Permanently');
-        header('Location: ' . $newaddress);
-        exit;
     }
 
     // If a new_dns param is present, redirect to the new DNS
@@ -347,9 +335,6 @@ function getSchoolInfo($service) {
             switch ($service) {
                 case 'moodle2':
                     $newaddress .= 'moodle/';
-                    break;
-                case 'intranet':
-                    $newaddress .= 'intranet/';
                     break;
             }
             header('HTTP/1.1 301 Moved Permanently');
@@ -372,9 +357,6 @@ function getSchoolInfo($service) {
                 case 'moodle2':
                     $new_url_host .= 'moodle/';
                     break;
-                case 'intranet':
-                    $new_url_host .= 'intranet/';
-                    break;
             }
             header('HTTP/1.1 301 Moved Permanently');
             header('Location: ' . $new_url_host);
@@ -388,14 +370,14 @@ function getSchoolInfo($service) {
             echo 'Center ' . $centre . ' not found in database';
             echo "\nerror\n";
         } else {
-            $service_dir = ( $service == 'nodes') ? "s=" : "s=$service";
+            $service_dir = ($service == 'nodes') ? "s=" : "s=$service";
             header('Location: ' . WWWROOT . 'error.php?' . $service_dir . '&dns=' . $centre);
         }
         exit;
     }
 
     // Set cookie for future requests
-    if (!empty($school_info['id_moodle2']) || !empty($school_info['id_intranet']) || !empty($school_info['id_nodes'])) {
+    if (!empty($school_info['id_moodle2'])  || !empty($school_info['id_nodes'])) {
 
         $bodycookie = $centre
             . '__' . (isset($school_info['clientCode']) ? $school_info['clientCode'] : '')
@@ -405,10 +387,6 @@ function getSchoolInfo($service) {
             . '__' . (isset($school_info['id_moodle2']) ? $school_info['id_moodle2'] : '')
             . '__' . (isset($school_info['database_moodle2']) ? $school_info['database_moodle2'] : '')
             . '__' . (isset($school_info['diskPercent_moodle2']) ? $school_info['diskPercent_moodle2'] : '')
-            . '__' . (isset($school_info['id_intranet']) ? $school_info['id_intranet'] : '')
-            . '__' . (isset($school_info['database_intranet']) ? $school_info['database_intranet'] : '')
-            . '__' . (isset($school_info['dbhost_intranet']) ? $school_info['dbhost_intranet'] : '')
-            . '__' . (isset($school_info['diskPercent_intranet']) ? $school_info['diskPercent_intranet'] : '')
             . '__' . (isset($school_info['id_nodes']) ? $school_info['id_nodes'] : '')
             . '__' . (isset($school_info['database_nodes']) ? $school_info['database_nodes'] : '')
             . '__' . (isset($school_info['dbhost_nodes']) ? $school_info['dbhost_nodes'] : '')
@@ -475,12 +453,13 @@ function getSchoolInfo($service) {
  * Get the information of the specified school from the database
  *
  * @param $dns school dns
- * @param $codeletter: false means code will be 08000000
+ * @param $codeletter : false means code will be 08000000
  *                     true  means code will be a8000000
  *
  * @return array with the schools information
  */
-function getSchoolFromDB($dns) {
+function getSchoolFromDB($dns)
+{
 
     $sql = "SELECT c.clientId, c.clientCode, c.typeId, c.URLType, c.URLHost, s.serviceName, cs.activedId, cs.serviceDB, cs.dbHost, cs.diskSpace, cs.diskConsume
 			FROM agoraportal_client_services cs
@@ -558,7 +537,8 @@ function getSchoolFromDB($dns) {
  * @param string $uname Codi de centre
  * @return array
  */
-function getSchoolFromWS($uname) {
+function getSchoolFromWS($uname)
+{
     global $agora;
     $results = array('error' => 0, 'message' => '');
 
@@ -598,7 +578,8 @@ function getSchoolFromWS($uname) {
  * Prints a message if DEBUG_ENABLED is on
  *
  */
-function xtec_debug($string) {
+function xtec_debug($string)
+{
     if (DEBUG_ENABLED == 'on') {
         print "<pre>$string</pre>\n\r";
     }
@@ -611,7 +592,8 @@ function xtec_debug($string) {
  * @param $service
  * @return array|bool
  */
-function getDiskInfo($dns, $service) {
+function getDiskInfo($dns, $service)
+{
     if (!isValidDNS($dns)) {
         return false;
     }
@@ -645,7 +627,8 @@ function getDiskInfo($dns, $service) {
  *
  * @return int disk disk percentage (without decimals)
  */
-function getDiskPercent($diskConsume, $diskSpace) {
+function getDiskPercent($diskConsume, $diskSpace)
+{
     if ($diskSpace != 0) {
         return round((($diskConsume / 1024) / $diskSpace) * 100);
     }
@@ -659,7 +642,8 @@ function getDiskPercent($diskConsume, $diskSpace) {
  * @param string $clientCode
  * @return boolean
  */
-function checkExtraFunc($clientCode) {
+function checkExtraFunc($clientCode)
+{
 
     $sql = 'SELECT extraFunc
             FROM `agoraportal_clients`
@@ -681,7 +665,8 @@ function checkExtraFunc($clientCode) {
  * @param int $precision Number of digits after the decimal point
  * @return string
  */
-function formatBytes($size, $precision = 2) {
+function formatBytes($size, $precision = 2)
+{
     $base = log($size) / log(1024);
     $suffixes = array('', 'k', 'M', 'G', 'T');
 
@@ -697,7 +682,8 @@ function formatBytes($size, $precision = 2) {
  *
  * @return string Client code transformed
  */
-function transformClientCode($clientCode, $type = 'letter2num') {
+function transformClientCode($clientCode, $type = 'letter2num')
+{
     if ($type == 'letter2num') {
         $pattern = '/^[abce]\d{7}$/'; // Matches a1234567
         if (preg_match($pattern, $clientCode)) {
@@ -735,13 +721,14 @@ function transformClientCode($clientCode, $type = 'letter2num') {
  * @param string $id_moodle2
  * @return string instance name
  */
-function get_filepath_moodle($id_moodle2 = '') {
+function get_filepath_moodle($id_moodle2 = '')
+{
     global $agora, $school_info;
 
     $filepath = $agora['moodle2']['datadir'];
     $filepath_number = 0;
     if (array_key_exists('filepath_number', $agora['moodle2'])) {
-        $filepath_number = (int) $agora['moodle2']['filepath_number'];
+        $filepath_number = (int)$agora['moodle2']['filepath_number'];
         $filepath_start = 1;
     }
 
@@ -751,19 +738,19 @@ function get_filepath_moodle($id_moodle2 = '') {
 
     // If $filepath_number is not set or it is an empty string, at this point its value
     // will be 0. In that case, no offset is applied
-    if (empty($filepath_number) || (array_key_exists('filepath_lastmoved', $agora['moodle2']) && $agora['moodle2']['filepath_lastmoved'] < $id_moodle2 )  ) {
+    if (empty($filepath_number) || (array_key_exists('filepath_lastmoved', $agora['moodle2']) && $agora['moodle2']['filepath_lastmoved'] < $id_moodle2)) {
         return $filepath . $agora['moodle2']['username'] . $id_moodle2;
     }
 
-    $offset = floor($id_moodle2 / $filepath_number) + (($id_moodle2% $filepath_number) == 0 ? ($filepath_start - 1) : $filepath_start);
+    $offset = floor($id_moodle2 / $filepath_number) + (($id_moodle2 % $filepath_number) == 0 ? ($filepath_start - 1) : $filepath_start);
 
     if ($offset > 0) {
-        $offset = (string) $offset; // Ensure there will not be cast issues
+        $offset = (string)$offset; // Ensure there will not be cast issues
         $filepath_prefix = 'repo';
         if (array_key_exists('filepath_prefix', $agora['moodle2'])) {
             $filepath_prefix = $agora['moodle2']['filepath_prefix'];
         }
-        $filepath = $filepath . $filepath_prefix .$offset. '/' . $agora['moodle2']['username'] . $id_moodle2;
+        $filepath = $filepath . $filepath_prefix . $offset . '/' . $agora['moodle2']['username'] . $id_moodle2;
     } else {
         $filepath = $filepath . $agora['moodle2']['username'] . $id_moodle2;
     }
@@ -774,12 +761,13 @@ function get_filepath_moodle($id_moodle2 = '') {
 /************* NEW DB MANAGER **************/
 /**
  * Get a DB conection for the specified service
- * @param  string $service  accepted values: admin, nodes, intranet, moodle/moodle2
+ * @param  string $service accepted values: admin, nodes, moodle/moodle2
  * @param  string $schoolid id of the school
- * @param  string $host     host to connect (or db in moodle)
+ * @param  string $host host to connect (or db in moodle)
  * @return mixed            created connection already conected
  */
-function get_dbconnection($service, $schoolid = '', $host = '') {
+function get_dbconnection($service, $schoolid = '', $host = '')
+{
     require_once('env-config.php');
     global $agora;
 
@@ -804,20 +792,11 @@ function get_dbconnection($service, $schoolid = '', $host = '') {
     }
 
     if (!isset($con[$service][$schoolid])) {
-        switch($service) {
-            case 'intranet':
-                $parts = explode(':', $host, 2);
-                $host = $parts[0];
-                $port = isset($parts[1]) ? $parts[1]: "";
-                $user = $agora['intranet']['username'];
-                $password = $agora['intranet']['userpwd'];
-                $database = $agora['intranet']['userprefix'] . $schoolid;
-                $con[$service][$schoolid] = new agora_dbmanager($host, $user, $password, $database, $port);
-                break;
+        switch ($service) {
             case 'nodes':
                 $parts = explode(':', $host, 2);
                 $host = $parts[0];
-                $port = isset($parts[1]) ? $parts[1]: "";
+                $port = isset($parts[1]) ? $parts[1] : "";
                 $user = $agora['nodes']['username'];
                 $password = $agora['nodes']['userpwd'];
                 $database = $agora['nodes']['userprefix'] . $schoolid;
@@ -849,12 +828,14 @@ function get_dbconnection($service, $schoolid = '', $host = '') {
 /**
  * New MYSQL Manager, contruction has to be done though get_dbconnection
  */
-class agora_dbmanager{
+class agora_dbmanager
+{
 
     private $connection = false;
     private $host, $user, $password, $database, $port;
 
-    public function __construct($host, $user, $password, $database, $port = false) {
+    public function __construct($host, $user, $password, $database, $port = false)
+    {
         if (empty($host)) {
             $host = null; // localhost
         }
@@ -875,7 +856,8 @@ class agora_dbmanager{
      * Connecto to the DB
      * @return [type] [description]
      */
-    private function connect() {
+    private function connect()
+    {
         if ($this->connection) {
             return;
         }
@@ -898,7 +880,8 @@ class agora_dbmanager{
      * @param  string $sql to execute
      * @return array  with the rows objects
      */
-    public function get_rows($sql) {
+    public function get_rows($sql)
+    {
         $result = $this->execute_query($sql);
         if (!$result) {
             return false;
@@ -918,7 +901,8 @@ class agora_dbmanager{
      * @param  string $sql to execute
      * @return object row of false
      */
-    public function get_row($sql) {
+    public function get_row($sql)
+    {
         $rows = $this->get_rows($sql);
         if ($rows && $data = array_shift($rows)) {
             return $data;
@@ -932,7 +916,8 @@ class agora_dbmanager{
      * @param  string $fieldname to get
      * @return mixed value of false
      */
-    public function get_field($sql, $fieldname) {
+    public function get_field($sql, $fieldname)
+    {
         $data = $this->get_row($sql);
         if ($data && isset($data->$fieldname)) {
             return $data->$fieldname;
@@ -945,7 +930,8 @@ class agora_dbmanager{
      * @param  string $sql to execute
      * @return int     Number of rows returned
      */
-    public function count_rows($sql) {
+    public function count_rows($sql)
+    {
         $rows = $this->execute_query($sql);
         if (!$rows) {
             return false;
@@ -960,7 +946,8 @@ class agora_dbmanager{
      * @return mysqli_result with the return
      * @throws Exception
      */
-    public function execute_query($sql) {
+    public function execute_query($sql)
+    {
         try {
             $this->connect();
         } catch (Exception $e) {
@@ -979,14 +966,16 @@ class agora_dbmanager{
      * Get last error from db query
      * @return string with error
      */
-    public function get_error() {
+    public function get_error()
+    {
         return $this->connection->error;
     }
 
     /**
      * Close DB connection
      */
-    public function close() {
+    public function close()
+    {
         if ($this->connection) {
             $this->connection->close();
             $this->connection = false;
@@ -1000,7 +989,8 @@ class agora_dbmanager{
  * @param  string $sql to execute
  * @return array, false with the rows returned in objects
  */
-function get_rows_from_db($sql) {
+function get_rows_from_db($sql)
+{
     try {
         $db = get_dbconnection('admin');
         $results = $db->get_rows($sql);
@@ -1018,7 +1008,8 @@ function get_rows_from_db($sql) {
  *
  * @return A connection handler or FALSE on error.
  */
-function connect_moodle($school) {
+function connect_moodle($school)
+{
     try {
         $con = get_dbconnection('moodle', $school['id'], $school['database']);
         return $con;
@@ -1034,25 +1025,11 @@ function connect_moodle($school) {
  *
  * @return Returns TRUE on success or FALSE on failure.
  */
-function disconnect_moodle($con) {
+function disconnect_moodle($con)
+{
     return oci_close($con);
 }
 
-/**
- * Open a connection to the specified Intranet database and return it
- *
- * @param school        Array with the school information (database)
- *
- * @return Connection handler
- */
-function connect_intranet($school) {
-    try {
-        $con = get_dbconnection('intranet', $school['id'], $school['dbhost']);
-        return $con;
-    } catch (Exception $e) {
-        return false;
-    }
-}
 
 /**
  * Open a connection to the specified Nodes database and return it
@@ -1061,7 +1038,8 @@ function connect_intranet($school) {
  *
  * @return Connection handler
  */
-function connect_nodes($school) {
+function connect_nodes($school)
+{
     try {
         $con = get_dbconnection('nodes', $school['id'], $school['dbhost']);
         return $con;

@@ -55,21 +55,6 @@ if (isset($args['update'])) {
     saveVarToFile('updateMoodle2.txt', $schoolsvar);
 
 
-    /* ZIKULA update file */
-    $schools = getServices(false, 'activedId', 'asc', 'intranet', '1');
-
-    $schoolsvar = '';
-    foreach ($schools as $school) {
-        if ($onlyname) {
-            $schoolsvar .= $school['dns'] . "\n";
-        } else {
-            $schoolsvar .= $agora['server']['html'] . $school['dns'] . "/intranet/upgradeModules.php\n";
-        }
-    }
-
-    saveVarToFile('updateIntranet.txt', $schoolsvar);
-
-
     /* NODES update file */
     $schools = getServices(false, 'activedId', 'asc', 'nodes', '1');
 
@@ -91,11 +76,6 @@ if (isset($args['update'])) {
             'name' => 'moodle2',
             'url' => "/moodle/admin/cron.php\n",
             'file' => 'cronMoodle2.txt',
-        ),
-        array(
-            'name' => 'intranet',
-            'url' => "/intranet/iwcron.php\n",
-            'file' => 'cronIntranet.txt',
         ),
         array(
             'name' => 'nodes',

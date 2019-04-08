@@ -23,9 +23,6 @@ if (isset($args['only']) && !empty($args['only'])) {
 } else {
     $doonly = false;
     /* Deprecated */
-    if (isset($args['onlyIntranet'])) {
-        $doonly = 'intranet';
-    }
     if (isset($args['onlyMoodle2'])) {
         $doonly = 'moodle2';
     }
@@ -55,9 +52,6 @@ foreach ($services as $school) {
     }
     cli_print_line('<br />' . $school['service'] . '<br />');
     switch($school['service']) {
-        case 'intranet':
-            process_intranet_stats($school, $year, $month, $day, $timestampofmonth);
-            break;
         case 'moodle2':
             process_moodle_stats($school, $year, $month, $day, $dayofweek, $daysofmonth, $timestampofmonth);
             break;
@@ -68,185 +62,6 @@ foreach ($services as $school) {
 }
 
 cli_print_line('<p>FET!</p>');
-
-
-/* INTRANET */
-
-/**
- * Obte les estadistiques d'una intranet i les desa a la taula d'agoraportal
- *
- * @param school           Array amb les dades del centre
- * @param year             Any del que es volen obtenir les estadistiques
- * @param month            Mes del que es volen obtenir les estadistiques
- * @param day              Dia del que es volen obtenir les estadistiques
- * @param timestampofmonth Timestamp del darrer segon del mes del que es volen obtenir les estadistiques
- *
- * @return bool false si hi ha un error recuperable i acaba l'script si es irrecuperable
- */
-function process_intranet_stats($school, $year, $month, $day, $timestampofmonth) {
-
-    $day_usage = getSchoolIntranetStats_DayUsage($school, $year, $month, $day);
-    $month_usage = getSchoolIntranetStats_MonthUsage($school, $year, $month, (int) $day);
-    $month_usage = $month_usage + $day_usage;
-    $month_users = getSchoolIntranetStats_MonthUsers($school, $timestampofmonth);
-
-    try {
-        $statsCon = get_dbconnection('admin');
-    } catch (Exception $e) {
-        cli_print_line('No s\'ha pogut connectar a la base de dades de les estadístiques');
-        exit();
-    }
-
-    $date = $year . $month;
-
-    // Consulta que comprova si el registre del mes del centre ja existeix o no
-    $sql = "SELECT yearmonth FROM agoraportal_intranet_stats_day WHERE yearmonth=$date AND clientcode='" . $school['code'] . "'";
-
-    // Executa la consulta
-    $rows = $statsCon->count_rows($sql);
-    if ($rows !== false) {
-        // INSERT: Si no hi ha cap registre, el crea
-        if ($rows == 0) {
-            $sql = "INSERT INTO agoraportal_intranet_stats_day
-                        (clientcode, yearmonth, clientDNS, total, users, d" . (int) $day . ")
-                        VALUES ('" . $school['code'] . "', $date, '" . $school['dns'] . "', $month_usage, $month_users, $day_usage)";
-        } else {
-            // UPDATE: Si el registre ja existeix, l'actualitza
-            $sql = "UPDATE agoraportal_intranet_stats_day
-                        SET total = $month_usage,
-                        users = $month_users,
-                        d" . (int) $day . " = $day_usage
-                        WHERE clientcode = '" . $school['code'] . "' AND yearmonth = '$date'";
-        }
-
-        cli_print_line('<p>' . $sql . '</p>');
-
-        // Executa la consulta anterior
-        if (!$statsCon->execute_query($sql)) {
-            cli_print_line($statsCon->get_error() . '<br />');
-        }
-    }
-
-    $statsCon->close();
-}
-
-/**
- * Obte el nombre de clics d'un dia d'una intranet i el retorna
- *
- * @param school        Array amb les dades del centre
- * @param year          Any del que es volen obtenir les estadistiques
- * @param month         Mes del que es volen obtenir les estadistiques
- * @param day           Dia del que es volen obtenir les estadistiques
- *
- * @return bool false si hi ha un error i el nombre de clics si no n'hi ha
- */
-function getSchoolIntranetStats_DayUsage($school, $year, $month, $day) {
-
-    if (!($con = connect_intranet($school))) {
-        cli_print_line('<br>No s\'ha pogut connectar a la base de dades de la intranet del centre ' . $school['dns']);
-        return false;
-    }
-
-    // Mira si el modul IWstats esta actiu
-    $iwstats_active = false;
-    $sql = 'SELECT `state` FROM modules WHERE `name` = \'IWstats\'';
-
-    if ($state = $con->get_field($sql, 'state') == 3 ) {
-        $iwstats_active = true;
-    }
-
-    // Valor predefinit
-    $hits = 0;
-
-    // Si el modul IWstats esta actiu, agafa les dades d'aquest mòdul
-    if ($iwstats_active) {
-        // Obte les dades del modul IWstats
-        $max = "$year-$month-$day 23:59:59"; // Format datetime del MySQL: 2011-05-02 17:02:55
-        $min = "$year-$month-$day 00:00:00";
-        $sql = 'SELECT count(*) AS total FROM IWstats WHERE iw_datetime > \'' . $min . '\' AND iw_datetime < \'' . $max . '\'';
-        if (!$hits = $con->get_field($sql, 'total')) {
-            $hits = 0;
-        }
-    }
-
-    $con->close();
-
-    return $hits;
-}
-
-/**
- * Obte la suma de clics de tot un mes d'una intranet exceptuant el dia actual i la retorna
- *
- * @param school        Array amb les dades del centre
- * @param year          Any del que es volen obtenir les estadistiques
- * @param month         Mes del que es volen obtenir les estadistiques
- * @param day           Dia actual
- *
- * @return int  El nombre de clics
- */
-function getSchoolIntranetStats_MonthUsage($school, $year, $month, $day) {
-
-    // Connecta a adminagora
-    try {
-        $statsCon = get_dbconnection('admin');
-    } catch (Exception $e) {
-        cli_print_line('No s\'ha pogut connectar a la base de dades de les estadístiques');
-        exit();
-    }
-
-    $clientcode = $school['code'];
-
-    for ($i = 1; $i < 32; $i++) {
-        if ($i != $day) {
-            $days_array[] = 'd' . $i;
-        }
-    }
-
-    $days2sum = implode(' + ', $days_array); // d1 + d2 + d3 ...
-
-    $sql = "SELECT $days2sum AS days2sum
-                FROM agoraportal_intranet_stats_month
-                WHERE yearmonth = '$year$month' AND clientcode = '$clientcode'";
-
-    if (!$value = $statsCon->get_field($sql, 'days2sum')) {
-        $value = 0;
-    }
-
-    $statsCon->close();
-
-    return $value;
-}
-
-/**
- * Obte el nombre d'usuaris d'una intranet i el retorna
- *
- * @param school           Array amb les dades del centre
- * @param timestampofmonth Timestamp del darrer segon del mes del que es volen obtenir les estadistiques
- *
- * @return int El nombre de clics d'usuaris i false en cas d'error
- */
-function getSchoolIntranetStats_MonthUsers($school, $timestampofmonth) {
-
-    if (!($con = connect_intranet($school))) {
-        cli_print_line('<br>No s\'ha pogut connectar a la base de dades de la intranet del centre ' . $school['dns']);
-        return false;
-    }
-
-    // Construeix la data de referència. A la BBDD és un datetime (format: 1970-01-01 00:00:00)
-    $regdate = date("Y-m-d H:i:s", $timestampofmonth);
-
-    $sql = 'SELECT count(`uid`) as value FROM users where `user_regdate` <= \'' . $regdate . '\'';
-
-    if (!$value = $con->get_field($sql, 'value')) {
-        $value = 0;
-    }
-
-    $con->close();
-
-    return $value;
-}
-
-
 
 /* MOODLE 2 */
 
@@ -707,7 +522,7 @@ function getSchoolMoodleStats_LastAccess($con) {
  *
  * @param statsCon    Connexió a la base de dades d'estadístiques
  * @param clientCode
- * @param service     Valors possibles: 'intranet', 'nodes', 'moodle2'
+ * @param service     Valors possibles: 'nodes', 'moodle2'
  *
  * @return string     La quota utilitzada en KB
  */
