@@ -111,14 +111,21 @@ class Service_moodle2 extends Service {
     public static function getDBConnection($dbHost, $db, $userid, $createDB = false) {
         global $ZConfig, $agora;
         $user = $agora['moodle2']['userprefix'] . $userid;
+        $driver = 'oci8';
+
         if ($ZConfig['System']['oci_pconnect']) {
-            $connect = oci_pconnect($user, $agora['moodle2']['userpwd'], $db);
+            $dbh = new PDO("$driver:host=$dbHost;dbname=$db", $user, $agora['moodle2']['userpwd'],array(PDO::ATTR_PERSISTENT => true));
         } else {
-            $connect = oci_connect($user, $agora['moodle2']['userpwd'], $db);
+            $dbh = new PDO("$driver:host=$dbHost;dbname=$db", $user, $agora['moodle2']['userpwd']);
         }
+
+        $connect = Doctrine_Manager::connection($dbh, $db);
+        $connect->setOption('username',$user);
+        $connect->setOption('password', $agora['moodle2']['userpwd']);
+
         if (!$connect) {
-            $e = oci_error();
-            throw new Exception(htmlentities($e['message'] . " - $user - $db"));
+            $e = $connect->errorInfo();
+            throw new Exception(htmlentities($e[2] . " - $user - $db"));
         }
         return $connect;
     }
@@ -136,29 +143,7 @@ class Service_moodle2 extends Service {
             return false;
         }
 
-        if (substr_count(strtolower(trim($sql)), 'insert') > 1
-            || substr_count(strtolower(trim($sql)), 'update') > 1
-            || substr_count(strtolower(trim($sql)), 'delete') > 1) {
-            // for multiple inserts, updates and deletes in Oracle SQL
-            $sql = "BEGIN $sql END;";
-        }
-        $results = oci_parse($connect, $sql);
-        if (!$results) {
-            $error = oci_error($connect);
-            throw new Exception($error["message"]);
-        }
-
-        $r = oci_execute($results);
-        if (!$r) {
-            $error = oci_error($results);
-            throw new Exception($error["message"]);
-        }
-
-        $values = array();
-        if (strtolower(substr(trim($sql), 0, 6)) == 'select') {
-            oci_fetch_all($results, $values, 0, -1, OCI_FETCHSTATEMENT_BY_ROW + OCI_ASSOC);
-        }
-        oci_free_statement($results);
+        $values = DBUtil::executeSQL($sql);
 
         if (!$keepalive) {
             self::disconnectDB($connect);
@@ -172,8 +157,8 @@ class Service_moodle2 extends Service {
      */
     public static function disconnectDB($connect) {
         if ($connect) {
-            oci_close($connect);
-        }
+            Doctrine_Manager::getInstance()->closeConnection($connect);
+       }
     }
 
     //Actions
