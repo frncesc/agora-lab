@@ -238,7 +238,7 @@ class SluggableListener extends MappedEventSubscriber
                     case 'camel':
                         $slug = preg_replace_callback(
                             '@^[a-z]|' . $slugFieldConfig['separator'] . '[a-z]@smi',
-                            create_function('$m', 'return strtoupper($m[0]);'),
+                            function($m) { return strtoupper($m[0]); },
                             $slug
                         );
                         break;

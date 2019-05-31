@@ -237,7 +237,6 @@ class Config_File {
         else
             $config_file = $file_name;
 
-        ini_set('track_errors', true);
         $fp = @fopen($config_file, "r");
         if (!is_resource($fp)) {
             $this->_trigger_error_msg("Could not open config file '$config_file'");

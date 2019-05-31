@@ -3021,7 +3021,7 @@ function z_prefilter_legacy($source, $view)
     $source = str_replace('<!--[', '{', str_replace(']-->', '}', $source));
 
     // handle old plugin names and return.
-    return preg_replace_callback('#\{(.*?)\}#', create_function('$m', 'return z_prefilter_legacy_callback($m);'), $source);
+    return preg_replace_callback('#\{(.*?)\}#', function($m){ return z_prefilter_legacy_callback($m); }, $source);
 }
 
 /**

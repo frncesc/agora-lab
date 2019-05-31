@@ -47,7 +47,9 @@ function array_sort_by_fields(&$data, $sortby)
             }
         }
         $code .= 'return $c;';
-        $sort_func = $sort_funcs[$sortby] = create_function('$a, $b', $code);
+        $sort_func = $sort_funcs[$sortby] = function ($a,$b) use ($code) {
+            $code;
+        };
     } else {
         $sort_func = $sort_funcs[$sortby];
     }

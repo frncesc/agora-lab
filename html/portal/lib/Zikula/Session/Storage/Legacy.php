@@ -81,7 +81,6 @@ class Zikula_Session_Storage_Legacy implements Zikula_Session_StorageInterface
         ini_set('session.gc_divisor', 10000);
         ini_set('session.gc_maxlifetime', System::getVar('secinactivemins') * 60); // Inactivity timeout for user sessions
 
-        ini_set('session.hash_function', 1);
 
         // Set custom session handlers
         ini_set('session.save_handler', 'user');

@@ -295,7 +295,7 @@ class Zikula_Tree
                 $path   = $map[$item['parent_id']];
                 $path[] = $item['parent_id'];
                 $handle =& $this->tree;
-                while (list($key, $value) = each($path)) {
+                foreach($path as $key => $value){
                     if ($value === $this->config['nullParent']) {
                         continue;
                     }

@@ -142,7 +142,7 @@ function _smarty_block_menu_parsemenu($params)
             $path = $map[$item['parentid']];
             $path[] = $item['parentid'];
             $handle =& $tree;
-            while (list($key, $value) = each($path)) {
+            foreach($path as $key => $value){
                 if ($value === null) {
                     continue;
                 }

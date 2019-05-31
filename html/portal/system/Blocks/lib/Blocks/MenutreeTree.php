@@ -95,7 +95,7 @@ class  Blocks_MenutreeTree extends Zikula_Tree
                 $path   = $map[$a[$reflang]['parent']];
                 $path[] = $a[$reflang]['parent'];
                 $handle =& $this->tree;
-                while (list($key, $value) = each($path)) {
+                foreach($path as $key => $value){
                     if ($value === 0) {
                         continue;
                     }

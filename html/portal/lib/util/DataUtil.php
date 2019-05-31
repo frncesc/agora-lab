@@ -324,7 +324,9 @@ class DataUtil
             $var = htmlspecialchars($var);
 
             // Fix the HTML that we want
-            $var = preg_replace_callback('#\022([^\024]*)\024#', create_function('$m', 'return DataUtil::formatForDisplayHTML_callback($m);'), $var);
+            $var = preg_replace_callback('#\022([^\024]*)\024#', function($m){
+                return DataUtil::formatForDisplayHTML_callback($m);}
+                , $var);
 
             // Fix entities if required
             if (System::getVar('htmlentities')) {
@@ -639,7 +641,7 @@ class DataUtil
     public static function mb_unserialize($string)
     {
         // we use a callback here to avoid problems with certain characters (single quotes and dollarsign) - drak
-        return @unserialize(preg_replace_callback('#s:(\d+):"(.*?)";#s', create_function('$m', 'return DataUtil::_mb_unserialize_callback($m);'), $string));
+        return @unserialize(preg_replace_callback('#s:(\d+):"(.*?)";#s', function($m){ return DataUtil::_mb_unserialize_callback($m); },$string));
     }
 
     /**
