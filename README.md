@@ -1,3 +1,33 @@
+# Agora-LAB
+
+Adapted fork of https://github.com/projectestac/agora with simplified instances of WordPress and Moodle, useful for testing new features.
+
+Clone this repository and define the `upstream` remote:
+
+```bash
+$ git clone --update-submodules https://github.com/frncesc/agora-lab.git
+$ git remote add upstream https://github.com/projectestac/agora.git
+# Check with:
+$ git remote -v
+$ git fetch upstream
+```
+
+Download Moodle and WordPress and deploy it on `/moodle` and `/nodes`
+
+Current versions are:
+- Moodle 3.6.5 from: https://download.moodle.org/download.php/stable36/moodle-3.6.5.tgz
+- WordPress 5.1.1 from: https://wordpress.org/wordpress-5.1.1.tar.gz
+
+Add the current Moodle and Wordpress plugins with symbolic links, launching:
+
+```bash
+$ ./create-moodle-links.sh
+$ ./create-nodes-links.sh
+```
+
+
+
+
 # Àgora
 
 [Àgora](http://agora.xtec.cat) is an on-line service integrated in the [Catalan Educational Telematic Network](http://www.xtec.cat) (XTEC) offering two types of educational platforms for schools:
