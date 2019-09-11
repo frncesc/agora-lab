@@ -25,6 +25,29 @@ $ ./create-moodle-links.sh
 $ ./create-nodes-links.sh
 ```
 
+Prepare devilbox
+
+```bash
+# Replace "/path/to/devilbox" and 
+# "/path/to/agora-lab" with the appropiate values
+$ cd /path/to/devilbox
+$ cd data/www
+$ mkdir moodle
+$ cd moodle
+$ ln -s /path/to/agora-lab/moodle ./htdocs
+```
+Edit file `/etc/hosts` and add:
+
+```
+127.0.0.1 moodle.loc nodes.loc
+```
+
+Launch Devilbox and create `moodle` and `nodes` databases in MySQL:
+
+```SQL
+CREATE USER 'moodle'@'%' IDENTIFIED WITH mysql_native_password;GRANT USAGE ON *.* TO 'moodle'@'%' REQUIRE NONE WITH MAX_QUERIES_PER_HOUR 0 MAX_CONNECTIONS_PER_HOUR 0 MAX_UPDATES_PER_HOUR 0 MAX_USER_CONNECTIONS 0;SET PASSWORD FOR 'moodle'@'%' = '***';CREATE DATABASE IF NOT EXISTS `moodle`;GRANT ALL PRIVILEGES ON `moodle`.* TO 'moodle'@'%';GRANT ALL PRIVILEGES ON `moodle\_%`.* TO 'moodle'@'%';
+```
+
 
 
 
