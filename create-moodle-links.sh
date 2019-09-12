@@ -10,8 +10,10 @@ echo "Creating symbolic links in /moodle"
 ln -s ../html/moodle2/langpacks ./moodle/
 
 # Themes
-# Warning: Not working with symlink: folder contents must be copied!
+
+# Not working with symlink: folder contents must be copied!
 # ln -s ../../html/moodle2/theme/xtec2 ./moodle/theme/
+cp -a ./html/moodle2/theme/xtec2 ./moodle/theme/
 
 # Course formats
 ln -s ../../../html/moodle2/course/format/simple ./moodle/course/format/
@@ -25,7 +27,6 @@ ln -s ../../html/moodle2/mod/geogebra ./moodle/mod/
 ln -s ../../html/moodle2/mod/hotpot ./moodle/mod/
 ln -s ../../html/moodle2/mod/questionnaire ./moodle/mod/
 
-
 # Local extensions
 ln -s ../../html/moodle2/local/mobile ./moodle/local/
 ln -s ../../html/moodle2/local/oauth ./moodle/local/
@@ -33,8 +34,10 @@ ln -s ../../html/moodle2/local/oauth ./moodle/local/
 # Reports
 
 # Blocks
-# WARNING: Blocks update!
+
+# Not working with symlink: folder contents must be copied!
 # ln -s ../../html/moodle2/blocks/completion_progress ./moodle/blocks/
+cp -a ./html/moodle2/blocks/completion_progress ./moodle/blocks/
 
 # Atto plugins
 ln -s ../../../../../html/moodle2/lib/editor/atto/plugins/fontsize ./moodle/lib/editor/atto/plugins/
@@ -50,14 +53,20 @@ ln -s ../../../html/moodle2/question/format/hotpot ./moodle/question/format/
 ln -s ../../../html/moodle2/user/tests/group_non_members_selector_test.php ./moodle/user/tests/
 
 # H5P
-ln -s ../../html/moodle2/mod/hvp ./moodle/mod/
+
+# Not working with symlink: folder contents must be copied!
+# ln -s ../../html/moodle2/mod/hvp ./moodle/mod/
+cp -a ./html/moodle2/mod/hvp ./moodle/mod/
 
 # Marsupial
-# WARNING: Blocks update!
-# ln -s ../../html/moodle2/mod/rcontent ./moodle/mod/
+
+# Warning: invalid code in main repo. Use patched version instead!
 # ln -s ../../html/moodle2/local/rcommon ./moodle/local/
-# ln -s ../../html/moodle2/blocks/my_books ./moodle/blocks/
-# ln -s ../../html/moodle2/blocks/rgrade ./moodle/blocks/
+ln -s ../../patches/moodle/local/rcommon ./moodle/local/
+
+ln -s ../../html/moodle2/mod/rcontent ./moodle/mod/
+ln -s ../../html/moodle2/blocks/my_books ./moodle/blocks/
+ln -s ../../html/moodle2/blocks/rgrade ./moodle/blocks/
 
 # ClickEdu
 ln -s ../../html/moodle2/local/clickedu ./moodle/local/

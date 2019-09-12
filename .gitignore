@@ -1,6 +1,6 @@
-moodle/
-nodes/
-wpdata/
+/moodle
+/nodes
+/wpdata
 adminInfo/*
 html/.htaccess
 html/syncdata
