@@ -5,7 +5,9 @@ Adapted fork of https://github.com/projectestac/agora with simplified instances 
 Clone this repository and define the `upstream` remote:
 
 ```bash
-$ git clone --update-submodules https://github.com/frncesc/agora-lab.git
+$ git clone --recurse-submodules https://github.com/frncesc/agora-lab.git
+# ... long process! please be patient
+$ cd agora-lab
 $ git remote add upstream https://github.com/projectestac/agora.git
 # Check with:
 $ git remote -v
