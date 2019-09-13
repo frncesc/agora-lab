@@ -20,12 +20,6 @@ Current versions are:
 - Moodle 3.6.5 from: https://download.moodle.org/download.php/stable36/moodle-3.6.5.tgz
 - WordPress 5.1.1 from: https://wordpress.org/wordpress-5.1.1.tar.gz
 
-Add the current Moodle and Wordpress plugins with symbolic links, launching:
-
-```bash
-$ ./create-moodle-links.sh
-$ ./create-nodes-links.sh
-```
 
 Prepare devilbox
 
@@ -38,18 +32,134 @@ $ mkdir moodle
 $ cd moodle
 $ ln -s /path/to/agora-lab/moodle ./htdocs
 ```
-Edit file `/etc/hosts` and add:
+
+Edit the file `/etc/hosts` and add this line:
 
 ```
 127.0.0.1 moodle.loc nodes.loc
 ```
 
-Launch Devilbox and create `moodle` and `nodes` databases in MySQL:
+Launch Devilbox and create `moodle` and `nodes` databases in MySQL with PHPMyAdmin:
 
 ```SQL
-CREATE USER 'moodle'@'%' IDENTIFIED WITH mysql_native_password;GRANT USAGE ON *.* TO 'moodle'@'%' REQUIRE NONE WITH MAX_QUERIES_PER_HOUR 0 MAX_CONNECTIONS_PER_HOUR 0 MAX_UPDATES_PER_HOUR 0 MAX_USER_CONNECTIONS 0;SET PASSWORD FOR 'moodle'@'%' = '***';CREATE DATABASE IF NOT EXISTS `moodle`;GRANT ALL PRIVILEGES ON `moodle`.* TO 'moodle'@'%';GRANT ALL PRIVILEGES ON `moodle\_%`.* TO 'moodle'@'%';
+CREATE USER 'moodle'@'%' IDENTIFIED WITH mysql_native_password;
+GRANT USAGE ON *.* TO 'moodle'@'%' REQUIRE NONE WITH MAX_QUERIES_PER_HOUR 0 MAX_CONNECTIONS_PER_HOUR 0 MAX_UPDATES_PER_HOUR 0 MAX_USER_CONNECTIONS 0;
+SET PASSWORD FOR 'moodle'@'%' = 'moodle';
+CREATE DATABASE IF NOT EXISTS `moodle`;
+GRANT ALL PRIVILEGES ON `moodle`.* TO 'moodle'@'%';
+GRANT ALL PRIVILEGES ON `moodle\_%`.* TO 'moodle'@'%';
 ```
 
+```SQL
+CREATE USER 'nodes'@'%' IDENTIFIED WITH mysql_native_password;
+GRANT USAGE ON *.* TO 'nodes'@'%' REQUIRE NONE WITH MAX_QUERIES_PER_HOUR 0 MAX_CONNECTIONS_PER_HOUR 0 MAX_UPDATES_PER_HOUR 0 MAX_USER_CONNECTIONS 0;
+SET PASSWORD FOR 'nodes'@'%' = 'nodes';
+CREATE DATABASE IF NOT EXISTS `nodes`;
+GRANT ALL PRIVILEGES ON `nodes`.* TO 'nodes'@'%';
+GRANT ALL PRIVILEGES ON `nodes\_%`.* TO 'nodes'@'%';
+```
+
+## Moodle setup
+
+Install Moodle from scratch, navigating to https://moodle.loc
+
+When finished, add the additional Moodle plugins by running:
+
+```bash
+$ ./create-moodle-links.sh
+```
+
+Update Moodle with the newly installed plugins, visiting again: https://moodle.loc
+
+Add the 'Catalan' language pack and make it the default:
+
+- Site Administration | Language Packs | Select `Català (ca)` | Install selected language pack
+- Site Administration | Language Settings | Default language | Select `Català (ca)` | Save Changes
+- Admin User | Preferences | Preferred language | Select `Català (ca)` | Save Changes
+
+Select XTEC2 theme as default:
+
+- Administració del lloc | Aparença | Selector de temes | A _Default_: Canvia el tema | Buscar XTEC2 | Utilitza el tema
+
+
+## Nodes setup
+
+Install WordPress in /nodes and launch https://nodes.loc to complete the initial set-up
+
+Create a new folder for `wpdata`:
+```bash
+$ mkdir wpdata
+```
+
+Deactivate all WP plugins:
+
+- Plugins | Select all | Bulk Actions - Deactivate | Apply
+
+Edit `nodes/wp-config.php` and add the following lines just before `/* That's all, stop editing! Happy publishing. */`:
+
+```php
+/* Multisite */
+define( 'WP_ALLOW_MULTISITE', true );
+define('MULTISITE', true);
+define('SUBDOMAIN_INSTALL', false);
+define('DOMAIN_CURRENT_SITE', 'nodes.loc');
+define('PATH_CURRENT_SITE', '/');
+define('SITE_ID_CURRENT_SITE', 1);
+define('BLOG_ID_CURRENT_SITE', 1);
+```
+Edit `nodes/.htaccess` and replace the current content by this one:
+
+```apache
+# BEGIN WordPress
+<IfModule mod_rewrite.c>
+
+RewriteEngine On
+RewriteBase /
+RewriteRule ^index\.php$ - [L]
+
+# add a trailing slash to /wp-admin
+RewriteRule ^([_0-9a-zA-Z-]+/)?wp-admin$ $1wp-admin/ [R=301,L]
+
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+RewriteRule ^([_0-9a-zA-Z-]+/)?(wp-(content|admin|includes).*) $2 [L]
+RewriteRule ^([_0-9a-zA-Z-]+/)?(.*\.php)$ $2 [L]
+RewriteRule . index.php [L]
+
+</IfModule>
+# END WordPress
+```
+
+For more info, check Wordpress Network Setup:
+
+- Tools | Network Setup | Check _Sub-directories_ | Install
+
+Create symlinks to Nodes specific plugins:
+
+```bash
+$ ./create-nodes-links.sh
+```
+
+Edit `nodes/wp-config.php` and add this line at the beggining of the file:
+
+```php
+include_once dirname(__FILE__) . '/wp-includes/xtec/lib.php';
+```
+
+Login again on https://nodes.loc and go to:
+
+- My Sites | Network Admin | Settings | Default Language: Català | Save Changes
+
+Then:
+
+- Els meus llocs | Administrador de la Xarxa | Extensions | Select all | Accions massives -> Activa la xarxa | Aplica
+
+Create sites...
+
+
+
+---
 
 
 
