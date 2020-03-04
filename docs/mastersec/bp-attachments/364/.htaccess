@@ -1,0 +1,6 @@
+
+# BEGIN BuddyPress Docs
+RewriteEngine On
+RewriteBase /agora/mastersec/docs/avaluacio-de-centre/
+RewriteRule (.+) ?bp-attachment=$1 [R=302,NC]
+# END BuddyPress Docs

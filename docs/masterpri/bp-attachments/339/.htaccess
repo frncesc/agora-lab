@@ -1,0 +1,6 @@
+
+# BEGIN BuddyPress Docs
+RewriteEngine On
+RewriteBase /agora/masterpri/docs/orientacions-per-elaborar-la-carta-de-compromis/
+RewriteRule (.+) ?bp-attachment=$1 [R=302,NC]
+# END BuddyPress Docs

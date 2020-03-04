@@ -1,0 +1,6 @@
+
+# BEGIN BuddyPress Docs
+RewriteEngine On
+RewriteBase /agora/masterpri/docs/sol%c2%b7licitud-de-reduccio-de-jornada-per-tenir-cura-dun-fill-o-filla/
+RewriteRule (.+) ?bp-attachment=$1 [R=302,NC]
+# END BuddyPress Docs

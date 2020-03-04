@@ -1,0 +1,6 @@
+
+# BEGIN BuddyPress Docs
+RewriteEngine On
+RewriteBase /agora/masterssee/docs/informacio-sobre-tramits-i-avaluacio-de-grups-de-treball-i-seminaris-de-coordinacio/
+RewriteRule (.+) ?bp-attachment=$1 [R=302,NC]
+# END BuddyPress Docs
